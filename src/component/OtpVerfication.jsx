@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 export function Otp(){
     return(
-        <div className="flex flex-col items-center justify-center w-full h-full">
+        <div className="flex flex-col items-center justify-center w-screen h-screen">
             <div className="bg-white bg-opacity-10 backdrop-blur-lg rounded-drop-shadow-lg w-96 h-96 rounded-3xl">
                 <div className="flex flex-col justify-center items-center text-white font-medium text-xl">
                     <Rocket fill="white" size={30} className="text-white mt-10 mb-4" />
