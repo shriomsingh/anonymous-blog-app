@@ -1,0 +1,59 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OTP Verification</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 20px auto;
+      background-color: #ffffff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+      color: #333;
+      text-align: center;
+    }
+
+    p {
+      color: #555;
+      font-size: 16px;
+      line-height: 1.6;
+      text-align: center;
+    }
+
+    .otp-code {
+      background-color: #007bff;
+      color: #fff;
+      font-size: 24px;
+      font-weight: bold;
+      text-align: center;
+      padding: 10px;
+      margin: 20px 0;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>OTP Verification</h1>
+    <p>Dear {{username}},</p>
+    <p>Your OTP code for verification is:</p>
+    <div class="otp-code">{{otp}}</div>
+    <p>Please use this code to complete the verification process.</p>
+    <p>If you did not request this verification, please ignore this email.</p>
+    <p>Start posting anonymously where no one will judge you.</p>
+  </div>
+</body>
+</html>
