@@ -3,6 +3,7 @@ const sendToken = (user, statusCode, res) => {
     const token = user.generateJwtForUser();
     res.status(statusCode).json({
         success: true,
+        message: "User authenticated",
         token,
     });
 }

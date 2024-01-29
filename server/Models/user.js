@@ -1,6 +1,5 @@
 const mongoose = require("mongoose");
 const jwt = require("jsonwebtoken");
-const bcrypt = require("bcryptjs");
 
 const UserSchema = new mongoose.Schema({
     username: { 
@@ -22,25 +21,9 @@ const UserSchema = new mongoose.Schema({
         required: [true, "Please provide a password. "],
         minLength: [8, "Password must be at least 8 characters long."],
         select: false,
-    },
+    }
     
 },{timestamps: true})
-
-UserSchema.pre("save", async function (next) {
-    if(!this.isModified("password")){
-        next();
-        return;
-    }
-    try{
-        const saltRounds = process.env.BCRYPT_SALT_ROUNDS || 10;
-        const salt =  await bcrypt.genSalt(parseInt(saltRounds));
-        this.password =  await bcrypt.hash(this.password, salt);
-        next();
-    } catch(error){
-        console.log(error);
-        next(error);
-    }
-});
 
 UserSchema.methods.generateJwtForUser = function(){
     const { JWT_SECRET_KEY, JWT_EXPIRE } = process.env;

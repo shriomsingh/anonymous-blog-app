@@ -1,9 +1,9 @@
 const User = require("../../Models/user");
-const bcrypt = require("bcryptjs");
+const bcrypt = require("bcrypt");
 
-const validateSignup = async (username, email, password) => {
+const validateSignup = async (username, email) => {
     // Check username requirements.
-    if(!email || !password){
+    if(!email || !username){
         throw new Error("Please provide both email and password");
     }
 
@@ -23,7 +23,6 @@ const validateSignup = async (username, email, password) => {
         throw error;
     }
 
-    
 
     return true;
 }
@@ -35,8 +34,9 @@ const validateLogin = (userIdentifier,password) => {
 }
 
 const comparePassword = async (password, hashedPassword) => {
-    const isMatch =  await bcrypt.compare(password, hashedPassword);
-    return isMatch;
+    return  await bcrypt.compare(password, hashedPassword);
+    // console.log(isMatch);
+    // return isMatch;
 }
 
 module.exports = { validateSignup, validateLogin, comparePassword };

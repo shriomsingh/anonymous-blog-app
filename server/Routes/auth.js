@@ -1,11 +1,12 @@
 const express = require("express");
 const { routeAuthentication } = require("../Middleware/Authorization/auth");
-const { setUserMiddleWare } = require("../Middleware/User/handleUser");
 const { register, login, accessAnonymousBlogs, validateOTP } = require("../Controllers/Authentication/auth");
+const cookieParser = require('cookie-parser');
 
 const router = express.Router();
 
-router.post("/register", setUserMiddleWare ,register);
+router.use(cookieParser());
+router.post("/register", register);
 router.post("/validateOTP", validateOTP);
 router.post("/login", login);
 router.get("/posts", routeAuthentication, accessAnonymousBlogs);

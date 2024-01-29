@@ -1,12 +1,12 @@
 const User = require("../../Models/user");
-const nodemailer = require("nodemailer");
 const {validateSignup, validateLogin, comparePassword } = require("../../Helpers/ValidateUser/validateUserInput");
 const { sendToken } = require("../../Helpers/Tokens/jwtToken");
 const CustomError = require("../../Helpers/CustomError/customError");
 const sendOtpEmail = require("../sendOtpEmail/sendOtpEmail");
-const otpGenerator = require("otp-generator");
+const userOTPVerification = require("../../Models/userOTPVerification");
+const { v4: uuidv4 } = require("uuid");
+const bcrypt = require("bcryptjs");
 
-const localstorage = [];
 
 const accessAnonymousBlogs = async(req, res, next) => {
     try{
@@ -30,19 +30,21 @@ const register = async(req, res) => {
         if (validationResult.error) {
             return res.status(400).json({ error: validationResult.error });
         }
- 
-        const otp = otpGenerator.generate(6, { lowerCaseAlphabets: false, upperCaseAlphabets: false, specialChars: false });
 
-        await sendOtpEmail(username, email, otp);
-        
+        const saltRounds = process.env.BCRYPT_SALT_ROUNDS || 10;
+        const salt =  await bcrypt.genSalt(parseInt(saltRounds));
+        const hashedpassword =  await bcrypt.hash(password, salt);
+
+        const _id = uuidv4();
+ 
+        await sendOtpEmail(_id, username, email);
+        res.cookie('user', {userId: _id, username: username, email: email, password: hashedpassword}, { httpOnly: true });
 
         res.status(200).json({
             success: true,
             message: "OTP sent successfully. Please Check your email for the OTP.",
-            user: {username, email, password, otp }
+            id : _id,
         });
-
-        next();
        
     } catch(error){
         //Handle error if needed
@@ -52,62 +54,82 @@ const register = async(req, res) => {
         if(error.code == 11000 && error.keyPattern && error.keyPattern.email){
             return res.status(400).json({error: "Email already exist."});
         }
-        // next(error);
+        res.status(400).json({
+            status: "FAILED",
+            message: error.message,
+        })
     }
 }
 
 const validateOTP = async (req, res, next) => {
     try{
         
-        const { submittedOtp } = req.body;
+        const { OTP } = req.body;
+        if(!OTP){
+            throw Error("Empty otp details are not allowed!!");
+        }
+        const { userId, username, email, password } = req.cookies.user;
+        
+        console.log("Cookies: ", req.cookies);
+        const otpDetails = await userOTPVerification.findOne({userId: userId});
 
-        const { username, email, password,} = req.user;
-        console.log("User details: ", req.user);
+        const { otp, expiresAt } = otpDetails;
+        console.log("OTP Details:", otpDetails);
 
-        if(!otp || submittedOtp !== otp){
-            return next(new CustomError("Invalid OTP", 401));
+        if(expiresAt < Date.now()){
+            await userOTPVerification.deleteMany({userId});
+            throw new Error("Code has expired. Please request again. ");
+        } else{
+            const validOTP = await bcrypt.compare(OTP , otp);
+           
+            if(!validOTP){
+                throw new Error("Invalid OTP. Check your inbox")
+            } else{
+            
+                const newUser = await User.create({
+                    username,
+                    email,
+                    password,
+                });
+                await userOTPVerification.deleteMany({ userId });
+                
+                res.clearCookie('user');
+                sendToken(newUser, 201, res);
+            }
         }
 
-        const newUser = await User.create({
-            username,
-            email,
-            password,
-        });
-
-        sendToken(newUser, 201, res);
-        
-        return res.status(200).json({
-            success: true,
-            message: "OTP validated successfully",
-        });
     } catch(error) {
         console.error(error);
-        next(error);
+        res.status(400).json({
+            status: "FAILED",
+            message: error.message
+        })
     }
 } 
 
-const login = async (req, res, next) => {
+const login = async (req, res) => {
     try{
         const {username, email, password} = req.body;
-        
         const userIdentifier = username ? {username}  : {email} ;
-        console.log(userIdentifier);
         if(!validateLogin(userIdentifier, password)){
-            return next(new CustomError("Please provide a valid username and password.", 400));
+            return res.status(400).json({status: 400 , message: "Provide a valid username-email or password"}); 
         }
         
         const user = await User.findOne(userIdentifier).select('+password');
+
         if(!user){
-            return next(new CustomError("Invalid credentials", 401));
-        }
-        if(!comparePassword(password, user.password)){
-            return next(new CustomError("Invalid credentials", 401))
+            return res.status(400).json({status: 400 , message: "You are not registered in the database"});
         }
 
+        const isMatch = await comparePassword(password, user.password);
+        if(!isMatch){
+            return res.status(400).json({status: 400 , message: "You entered a wrong password"});
+        }
+        
         sendToken(user, 200, res);
     } catch(error){
         console.log(error);
-        next(error);
+        res.status(500).json({status: 500, message: error.message});
     }
 }
 
