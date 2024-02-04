@@ -10,7 +10,7 @@ export function CreateAccount(){
                     <p className="text-white">Create Your Account</p>
                 </div>
                 <div className="flex flex-col justify-center items-center">
-                    <input type="text" className="bg-transparent border border-opacity-25 border-white  w-64 h-10 rounded-xl mt-10 mb-2 p-2  text-white placeholder:text-white placeholder:font-normal placeholder:opacity-20 focus:outline-none focus:placeholder-transparent" placeholder="Enter Your Name..." />
+                    <input type="text" className="bg-transparent border border-opacity-25 border-white  w-64 h-10 rounded-xl mt-10 mb-2 p-2  text-white placeholder:text-white placeholder:font-normal placeholder:opacity-20 focus:outline-none focus:placeholder-transparent" placeholder="Enter Your Username..." />
                     <input type="text" className="bg-transparent border border-opacity-25 border-white  w-64 h-10 rounded-xl mt-5 mb-2 p-2 text-white placeholder:text-white placeholder:opacity-20 focus:outline-none focus:placeholder-transparent" placeholder="Enter Your Email..." />
                     <Link to="/otp">
                         <button className="flex flex-row items-center justify-center text-white mt-5 w-64 h-12 rounded-full bg-[#404040] hover:bg-white hover:text-black">Create Your Account <ArrowRight className="ml-1" /></button>

@@ -11,6 +11,7 @@ import { AllPost } from './AllPost';
 import { CommentedPosts } from './CommentedPosts';
 import { RepliedPosts } from './RepliedPosts';
 import { Toaster } from 'react-hot-toast';
+import { LoginComponent } from './LoginComponent';
 
 
 export function App(){
@@ -30,6 +31,7 @@ export function App(){
                     <Route path="/" element={<HeroSection/>}></Route>
                     <Route path="/register" element={<CreateAccount />}> </Route>
                     <Route path="/otp" element={<Otp />}> </Route>
+                    <Route path="/login" element={<LoginComponent toggleAuthentication={toggleAuthentication}/>}></Route>
                     <Route path="/username" element={<AccountCreated toggleAuthentication={toggleAuthentication}/>}> </Route>
                     <Route path="/posts" element={<AllPost />}> </Route>
                     <Route path="/username/posts/commented" element={<CommentedPosts />}> </Route>

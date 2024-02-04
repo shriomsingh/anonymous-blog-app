@@ -1,4 +1,54 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+  
+  .animate-text span{
+    position: relative;
+  }
+  
+  .animate-text span::before{
+    content: "judge.";
+    color: #ffffff;
+    animation: words 20s infinite;
+  }
+  .animate-text span::after{
+    content: "";
+    position: absolute;
+    width: calc(100% + 10px);
+    height:100%;
+    background-color: #111111;
+    border-left: 4px solid #ffffff;
+    right: -8px;
+    animation: cursor .8s infinite, typing 20s steps(14) infinite alternate;
+  }
+  @keyframes cursor{
+    to {
+        border-left: 2px solid transparent;
+    }
+  }
 
+  @keyframes words {
+    0%, 20%{
+        content: "hate.";
+    }
+    21%, 40%{
+        content: "judge.";
+    }
+    41%, 60%{
+        content: "roast.";
+    }
+    61%, 80%{
+        content: "sleuth.";
+    }
+    81%, 100%{
+        content: "unmask.";
+    }
+  }
+  @keyframes typing {
+    10%, 15%, 30%, 35%, 50%, 55%, 70%, 75%, 90%, 95%{
+        width: 0;
+    }
+    4%,20%,25%,40%,45%,60%,65%,80%,85%{
+        width: calc(100% + 10px);
+    }
+  }
